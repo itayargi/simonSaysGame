@@ -1,0 +1,1 @@
+export const SIMONBTN = require('./simon.png')
