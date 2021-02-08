@@ -6,23 +6,36 @@ import {
   TouchableOpacity,
   Image,
   Animated,
+  Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {SIMONBTN} from '../../android/app/src/images';
 import * as RNLocalize from 'react-native-localize';
 import { useLinkProps } from '@react-navigation/native';
 
+const wait = (timeout) => {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeout);
+    });
+  };
+
 const SimonBoard = (props) => {
-  const [index, setIndex] = useState(0);
-  const [pressNotAllowed, setPressNotAllow] = useState(false);
+  const [pressNotAllowed, setPressNotAllow] = useState(true);
   const [redBtn, setRedBtn] = useState('red');
   const [greenBtn, setGreenBtn] = useState('green');
   const [blueBtn, setBlueBtn] = useState('blue');
   const [yellowBtn, setYellowBtn] = useState('yellow');
   const randomNumber = Math.floor(Math.random() * 4 + 1);
-
-  const color1 = '#50d2c2';
-  const color2 = '#3333a3';
+// hook for saving btn press
+  const [btnPress, setBtnPress] = useState(
+    {
+      stage: [randomNumber],
+      index: 0,
+      numOfMoves: 10,
+    },
+);
+  const color1 = props.colors.btn1[0];
+  const color2 =  props.colors.btn1[1];
 
 //   align
 const hebrewAlign = {
@@ -39,20 +52,82 @@ const hebrewAlign = {
   }
   const device = RNLocalize.getLocales();
   const alignToLaguage = device && device[0].languageTag == "he-IL" ? hebrewAlign : englishAlign
+  const endFlash = 1000;
+  const gameSpeed = 1700;
+  const stageArray = btnPress.stage.map((btnNum) => btnNum);
+const userLevel = btnPress.stage.length
+//   btn flash actions
+const redFlash = () => {
+    setRedBtn('#ffb6c1')
+    wait(endFlash).then(() => setRedBtn('red'));
+  };
+  const greenFlash = () => {
+    setGreenBtn('#adff2f')
+    wait(endFlash).then(() => setGreenBtn('green'));
+  };
+  const blueFlash = () => {
+    setBlueBtn('#add8e6')
+    wait(endFlash).then(() => setBlueBtn('blue'));
+  };
+  const yellowFlash = () => {
+    setYellowBtn('#fffacd')
+    wait(endFlash).then(() => setYellowBtn('yellow'));
+  };
+  const optionsObj = [
+    redFlash,greenFlash,blueFlash,yellowFlash
+  ]
  
 //   comp press
-const computerTurnPress=()=>{
-
-}
+const computerTurnPress = () => {
+    setPressNotAllow(true);
+    var i = 0;
+    let intervalId = setInterval(() => {
+      if (stageArray[i] == undefined) {
+        clearInterval(intervalId);
+        setPressNotAllow(false);
+      } else {
+        let btnById = optionsObj[stageArray[i]-1]
+        let action = btnById()
+      }
+      i++;
+    }, gameSpeed);
+    setBtnPress({...btnPress, index:0})
+  };
 // navigate to ResultScreen
 const navigateResult=()=>{
 props.navigation.navigate('ResultScreen')
 }
-
-
   // my click
-  const myPressFlash = (num) => {};
+  const myPressFlash = (num) => {
+      const myPress = num;
+      const indexInArray = btnPress.index;
+      const tatalNumInArray = btnPress.stage.length
+      const btnNumInArray = btnPress.stage[indexInArray];
+    //   if the user has a mistake
+    if(myPress !== btnNumInArray){
+        Alert.alert('wrong number')
+        setBtnPress({stage:[randomNumber], index:0, numOfMoves:10})
+    }
+    else if (indexInArray + 1<tatalNumInArray){
+        // next index to check
+        setBtnPress({...btnPress,index:btnPress.index + 1,})
+    }
+    else{
+        setBtnPress({...btnPress,index:0, numOfMoves:btnPress.numOfMoves - 1, stage:[...btnPress.stage, randomNumber]})
+    }
+  };
+  const startBtn = ()=>{
+      if(btnPress.stage.length == 1){
+          computerTurnPress()
+      }
+  }
 
+  useEffect(()=>{
+      if (btnPress.stage.length>1){
+          computerTurnPress()
+
+      }
+  },[btnPress.stage])
   // simon btn
   const renderSimonBtn = (onPress, stylesBtn, styleImage) => {
     return (
@@ -76,7 +151,7 @@ props.navigation.navigate('ResultScreen')
         <View style={styles.fullScreen}>
           <View style={styles.statusShape}>
             <Text style={styles.statusText}>Level:</Text>
-            <Text style={[styles.statusText]}>{1}</Text>
+            <Text style={[styles.statusText]}>{userLevel}</Text>
           </View>
         </View>
         {/* first row btns (red and green) */}
@@ -105,7 +180,7 @@ props.navigation.navigate('ResultScreen')
       </View>
       <View style={styles.Play}>
         <TouchableOpacity
-          onPress={() => computerTurnPress()}
+          onPress={() => startBtn()}
           style={styles.btn}>
           <LinearGradient
             colors={[color1, color2]}

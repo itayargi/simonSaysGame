@@ -12,25 +12,19 @@ const MyTheme = {
     dark: false,
     colors: {
       primary: '#50d2c2',
-      firstPlace: 'rgb(255, 204, 0)',
-      topThree: 'rgb(255, 255, 204)',
-      restOfPlayers: '#f1f2e3',
       background: 'black',
       card: '#3333a3',
       header: '#535264',
-      favoriteColor: '#01A3FE',
-      popularColor: '#2F80ED',
       text: '#222310',
-      white:"#ffffff",
       border: 'rgb(180, 179, 191)',
-      btn1: '#000080',
-      btn2: '#483d8b',
+      btn1: ['#50d2c2','#3333a3'],
+      btn2: ['#3333a3',],
     },
   };
 
 const AppNavigation = ()=>{ 
  return (
-    <NavigationContainer ref={navigationRef} >
+    <NavigationContainer theme={MyTheme} ref={navigationRef} >
     <Stack.Navigator
       // headerMode="screen"
       screenOptions={{animationEnabled: false, headerLeft: '', }}
