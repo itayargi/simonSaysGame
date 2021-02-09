@@ -11,7 +11,7 @@ const wait = (timeout) => {
   const filesList =[ 
     'dosoundtwo.mp3', 'resound.m4a','misound.m4a','fasound.m4a',
   ]
-
+const audioLength = 800;
 export const playSoundBtn = (num) => {
     const file = filesList[num];
     console.log(('file', file));
@@ -32,7 +32,7 @@ if (file !== undefined){
         });
         whoosh.setCurrentTime(0.2);
         // Get the current playback point in seconds
-        wait(1000).then(() => {
+        wait(audioLength).then(() => {
           whoosh.stop(() => {
             // whoosh.play();
           });

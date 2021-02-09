@@ -19,7 +19,7 @@ const wait = (timeout) => {
 };
 
 const SimonBoard = (props) => {
-  const [pressNotAllowed, setPressNotAllow] = useState(false);
+  const [pressNotAllowed, setPressNotAllow] = useState(true);
   const [flashSimonBtn, setFlashSimonBtn] = useState('');
   const randomNumber = Math.floor(Math.random() * 4 + 1);
   const numberOfRounds = 3;
@@ -31,7 +31,7 @@ const SimonBoard = (props) => {
   var blueSimon = new SimonButton(3, 'blue');
   var yellowSimon = new SimonButton(4, 'yellow');
   flaseTime = 400;
-  
+
   const [simonOption, setSimonOption] = useState({
     stage: [getRandomBtn()],
     index: 0,
@@ -60,10 +60,12 @@ const SimonBoard = (props) => {
   };
 
   const startRound = (stage = []) => {
-      if(simonOption.numOfTurnes == 1){
-          Alert.alert('Yeah we won!')
-          return;
-      }
+    if (simonOption.numOfTurnes == 1) {
+      let newBtn = getRandomBtn();
+      Alert.alert('Yeah we won!');
+      setSimonOption({stage: [newBtn], index: 0, numOfTurnes: numberOfRounds});
+      return;
+    }
     setPressNotAllow(true);
     let i = 0;
     let intervalRound = setInterval(() => {
@@ -88,12 +90,11 @@ const SimonBoard = (props) => {
       Alert.alert('Wrong number');
       setSimonOption({stage: [newBtn], index: 0, numOfTurnes: numberOfRounds});
     }
-
     // check and move index up
     else if (indexToCheck + 1 < lengthOfArray) {
       setSimonOption({...simonOption, index: simonOption.index + 1});
     }
-    // if last number in array - check is complet
+    // if last number in array - check complete => add another random SimonButton
     else {
       setSimonOption({
         ...simonOption,

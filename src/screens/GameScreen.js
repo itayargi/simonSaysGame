@@ -7,7 +7,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import {useTheme} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SimonBoard from '../componenets/SimonBoard';
+
+
 const GameScreen = ({navigation}) => {
+  
   const [modalShow, setModalShow] = useState(false);
   const [winGame, setWinGame] = useState(false);
   const {colors} = useTheme();
