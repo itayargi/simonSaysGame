@@ -5,129 +5,138 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  Animated,
   Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {SIMONBTN} from '../../android/app/src/images';
 import * as RNLocalize from 'react-native-localize';
-import { useLinkProps } from '@react-navigation/native';
-
+import {useLinkProps} from '@react-navigation/native';
+import {playSoundBtn} from './utils';
 const wait = (timeout) => {
-    return new Promise((resolve) => {
-      setTimeout(resolve, timeout);
-    });
-  };
+  return new Promise((resolve) => {
+    setTimeout(resolve, timeout);
+  });
+};
 
 const SimonBoard = (props) => {
-  const [pressNotAllowed, setPressNotAllow] = useState(true);
-  const [redBtn, setRedBtn] = useState('red');
-  const [greenBtn, setGreenBtn] = useState('green');
-  const [blueBtn, setBlueBtn] = useState('blue');
-  const [yellowBtn, setYellowBtn] = useState('yellow');
+  const [pressNotAllowed, setPressNotAllow] = useState(false);
+  const [flashSimonBtn, setFlashSimonBtn] = useState('');
   const randomNumber = Math.floor(Math.random() * 4 + 1);
-// hook for saving btn press
-  const [btnPress, setBtnPress] = useState(
-    {
-      stage: [randomNumber],
-      index: 0,
-      numOfMoves: 10,
-    },
-);
-  const color1 = props.colors.btn1[0];
-  const color2 =  props.colors.btn1[1];
+  const numberOfRounds = 3;
+  const flashColor = 'white';
+  const redColor = 'red';
 
-//   align
-const hebrewAlign = {
-    first:"90deg",
-    sec:"0deg",
-    third:"180deg",
-    four:"270deg"
+  var redSimon = new SimonButton(1, 'red');
+  var greenSimon = new SimonButton(2, 'green');
+  var blueSimon = new SimonButton(3, 'blue');
+  var yellowSimon = new SimonButton(4, 'yellow');
+  flaseTime = 400;
+  
+  const [simonOption, setSimonOption] = useState({
+    stage: [getRandomBtn()],
+    index: 0,
+    numOfTurnes: numberOfRounds,
+  });
+  const color1 = props.colors.btn1[0];
+  const color2 = props.colors.btn1[1];
+  function SimonButton(id, color) {
+    this.id = id;
+    this.color = color;
+    this.playSound = function () {
+      playSoundBtn(this.id - 1);
+    };
   }
-  const englishAlign = {
-    first:"0deg",
-    sec:"90deg",
-    third:"270deg",
-    four:"180deg"
+
+  function getRandomBtn() {
+    const randomNumber = Math.floor(Math.random() * 3 + 0);
+    const options = [redSimon, greenSimon, blueSimon, yellowSimon];
+    return options[randomNumber];
   }
-  const device = RNLocalize.getLocales();
-  const alignToLaguage = device && device[0].languageTag == "he-IL" ? hebrewAlign : englishAlign
-  const endFlash = 1000;
-  const gameSpeed = 1700;
-  const stageArray = btnPress.stage.map((btnNum) => btnNum);
-const userLevel = btnPress.stage.length
-//   btn flash actions
-const redFlash = () => {
-    setRedBtn('#ffb6c1')
-    wait(endFlash).then(() => setRedBtn('red'));
+
+  const simonAction = (simonB = SimonButton) => {
+    setFlashSimonBtn(simonB.color);
+    wait(200).then(() => setFlashSimonBtn(''));
+    simonB.playSound();
   };
-  const greenFlash = () => {
-    setGreenBtn('#adff2f')
-    wait(endFlash).then(() => setGreenBtn('green'));
-  };
-  const blueFlash = () => {
-    setBlueBtn('#add8e6')
-    wait(endFlash).then(() => setBlueBtn('blue'));
-  };
-  const yellowFlash = () => {
-    setYellowBtn('#fffacd')
-    wait(endFlash).then(() => setYellowBtn('yellow'));
-  };
-  const optionsObj = [
-    redFlash,greenFlash,blueFlash,yellowFlash
-  ]
- 
-//   comp press
-const computerTurnPress = () => {
+
+  const startRound = (stage = []) => {
+      if(simonOption.numOfTurnes == 1){
+          Alert.alert('Yeah we won!')
+          return;
+      }
     setPressNotAllow(true);
-    var i = 0;
-    let intervalId = setInterval(() => {
-      if (stageArray[i] == undefined) {
-        clearInterval(intervalId);
+    let i = 0;
+    let intervalRound = setInterval(() => {
+      //   finish round
+      if (stage[i] == undefined) {
+        clearInterval(intervalRound);
         setPressNotAllow(false);
       } else {
-        let btnById = optionsObj[stageArray[i]-1]
-        let action = btnById()
+        simonAction(stage[i]);
       }
       i++;
     }, gameSpeed);
-    setBtnPress({...btnPress, index:0})
+    setSimonOption({...simonOption, index: 0});
   };
-// navigate to ResultScreen
-const navigateResult=()=>{
-props.navigation.navigate('ResultScreen')
-}
-  // my click
-  const myPressFlash = (num) => {
-      const myPress = num;
-      const indexInArray = btnPress.index;
-      const tatalNumInArray = btnPress.stage.length
-      const btnNumInArray = btnPress.stage[indexInArray];
-    //   if the user has a mistake
-    if(myPress !== btnNumInArray){
-        Alert.alert('wrong number')
-        setBtnPress({stage:[randomNumber], index:0, numOfMoves:10})
+  const myPlay = (btn = SimonButton) => {
+    let newBtn = getRandomBtn();
+    const indexToCheck = simonOption.index;
+    const arrayOfOption = simonOption.stage;
+    const lengthOfArray = arrayOfOption.length;
+    // if mistake
+    if (arrayOfOption[indexToCheck].id !== btn.id) {
+      Alert.alert('Wrong number');
+      setSimonOption({stage: [newBtn], index: 0, numOfTurnes: numberOfRounds});
     }
-    else if (indexInArray + 1<tatalNumInArray){
-        // next index to check
-        setBtnPress({...btnPress,index:btnPress.index + 1,})
+
+    // check and move index up
+    else if (indexToCheck + 1 < lengthOfArray) {
+      setSimonOption({...simonOption, index: simonOption.index + 1});
     }
-    else{
-        setBtnPress({...btnPress,index:0, numOfMoves:btnPress.numOfMoves - 1, stage:[...btnPress.stage, randomNumber]})
+    // if last number in array - check is complet
+    else {
+      setSimonOption({
+        ...simonOption,
+        index: 0,
+        numOfTurnes: simonOption.numOfTurnes - 1,
+        stage: [...simonOption.stage, newBtn],
+      });
     }
   };
-  const startBtn = ()=>{
-      if(btnPress.stage.length == 1){
-          computerTurnPress()
-      }
-  }
 
-  useEffect(()=>{
-      if (btnPress.stage.length>1){
-          computerTurnPress()
+  //   align
+  const hebrewAlign = {
+    first: '90deg',
+    sec: '0deg',
+    third: '180deg',
+    four: '270deg',
+  };
+  const englishAlign = {
+    first: '0deg',
+    sec: '90deg',
+    third: '270deg',
+    four: '180deg',
+  };
+  const device = RNLocalize.getLocales();
+  const alignToLaguage =
+    device && device[0].languageTag == 'he-IL' ? hebrewAlign : englishAlign;
+  const gameSpeed = 1700;
+  const userLevel = simonOption.stage.length;
 
-      }
-  },[btnPress.stage])
+  // navigate to ResultScreen
+  const navigateResult = () => {
+    props.navigation.navigate('ResultScreen');
+  };
+
+  const startBtn = () => {
+    startRound(simonOption.stage);
+  };
+  useEffect(() => {
+    if (simonOption.stage.length > 1) {
+      startRound(simonOption.stage);
+    }
+  }, [simonOption.stage]);
+
   // simon btn
   const renderSimonBtn = (onPress, stylesBtn, styleImage) => {
     return (
@@ -156,32 +165,48 @@ props.navigation.navigate('ResultScreen')
         </View>
         {/* first row btns (red and green) */}
         <View style={styles.btnPlayRow}>
-          {renderSimonBtn(() => myPressFlash(1), styles.btnSingle, [
+          {renderSimonBtn(() => myPlay(redSimon), styles.btnSingle, [
             styles.btnImage,
 
-            {tintColor: redBtn, transform: [{rotate: alignToLaguage.first}]},
+            {
+              tintColor:
+                flashSimonBtn == redSimon.color ? 'white' : redSimon.color,
+              transform: [{rotate: alignToLaguage.first}],
+            },
           ])}
-          {renderSimonBtn(() => myPressFlash(2), styles.btnSingle, [
+          {renderSimonBtn(() => myPlay(greenSimon), styles.btnSingle, [
             styles.btnImage,
-            {tintColor: greenBtn, transform: [{rotate: alignToLaguage.sec}]},
+            {
+              tintColor:
+                flashSimonBtn == greenSimon.color ? 'white' : greenSimon.color,
+              transform: [{rotate: alignToLaguage.sec}],
+            },
           ])}
         </View>
         {/* second row btns (blue and yellow) */}
         <View style={styles.btnPlayRow}>
-          {renderSimonBtn(() => myPressFlash(3), styles.btnSingle, [
+          {renderSimonBtn(() => myPlay(blueSimon), styles.btnSingle, [
             styles.btnImage,
-            {tintColor: blueBtn, transform: [{rotate: alignToLaguage.third}]},
+            {
+              tintColor:
+                flashSimonBtn == blueSimon.color ? 'white' : blueSimon.color,
+              transform: [{rotate: alignToLaguage.third}],
+            },
           ])}
-          {renderSimonBtn(() => myPressFlash(4), styles.btnSingle, [
+          {renderSimonBtn(() => myPlay(yellowSimon), styles.btnSingle, [
             styles.btnImage,
-            {tintColor: yellowBtn, transform: [{rotate: alignToLaguage.four}]},
+            {
+              tintColor:
+                flashSimonBtn == yellowSimon.color
+                  ? 'white'
+                  : yellowSimon.color,
+              transform: [{rotate: alignToLaguage.four}],
+            },
           ])}
         </View>
       </View>
       <View style={styles.Play}>
-        <TouchableOpacity
-          onPress={() => startBtn()}
-          style={styles.btn}>
+        <TouchableOpacity onPress={() => startBtn()} style={styles.btn}>
           <LinearGradient
             colors={[color1, color2]}
             style={styles.linearGradient}>

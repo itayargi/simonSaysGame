@@ -25,7 +25,9 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import AppNavigation from './src/navigation/AppNavigation';
 import GameScreen from './src/screens/GameScreen';
-
+var Sound = require('react-native-sound');
+// Enable playback in silence mode
+Sound.setCategory('Playback');
 const App: () => React$Node = () => {
   return (
     <>

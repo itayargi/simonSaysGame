@@ -10,6 +10,8 @@ target 'simongame' do
 
   pod 'RNLocalize', :path => '../node_modules/react-native-localize'
 
+  pod 'RNSound', :path => '../node_modules/react-native-sound'
+
   target 'simongameTests' do
     inherit! :complete
     # Pods for testing
