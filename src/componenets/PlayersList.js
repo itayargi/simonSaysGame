@@ -15,7 +15,6 @@ const PlayersList = (props) => {
         <Text style={[styles.headerText, {color: colors.white}]}>Level</Text>
       </View>
       {playersList.map((player, index) => {
-        console.log('index', index);
         return (
           <View
             key={index}
@@ -37,8 +36,9 @@ const PlayersList = (props) => {
               ]}>
               <Text style={{color: colors.text}}>{player.name}</Text>
               <Text style={{color: colors.text}}>{player.score}</Text>
+              
             </View>
-            <Image style={{width: 50, height: 30}} source={{uri: trophyUri}} />
+            <View style={{ paddingHorizontal:7}}>
             {index == 0 && (
               <Image
                 style={{width: 30, height: 30}}
@@ -51,6 +51,8 @@ const PlayersList = (props) => {
                 source={{uri: silverUri}}
               />
             )}
+            </View>
+          
           </View>
         );
       })}
