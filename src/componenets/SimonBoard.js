@@ -35,7 +35,7 @@ const SimonBoard = (props) => {
     index: 0,
   });
   ///////// game setting /////////
-  const numberOfRounds = 3;
+  const numberOfRounds = 10;
   const flashColor = '#e6e6b7';
   const gameSpeed = 1200;
   // ////////////////////////////

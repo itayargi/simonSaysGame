@@ -17,7 +17,7 @@ const GameScreen = (props) => {
   const [userLevel, setUserLevel] = useState();
   const navigation = props.navigation;
   const reduxState = props.scores;
-  const maxPlayersOnList = 3;
+  const maxPlayersOnList = 10;
   const sumOfPlayers = reduxState.length;
 
   const checkifUserEnterList = (score) => {

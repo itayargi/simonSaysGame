@@ -17,11 +17,15 @@ const MyTheme = {
       primary: '#50d2c2',
       background: 'black',
       card: '#3333a3',
-      header: '#535264',
-      text: '#222310',
-      border: 'rgb(180, 179, 191)',
+      // header: '#535264',
+      text: 'white',
+      // border: 'rgb(180, 179, 191)',
       btn1: ['#50d2c2','#3333a3'],
       btn2: ['#3333a3',],
+      white:"white",
+      firstPlace:"#cdcd32",
+      topThree:"#bbbb96",
+      restOfPlayers:"#707061"
     },
   };
 
