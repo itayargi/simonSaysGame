@@ -23,23 +23,24 @@ const SimonBoard = (props) => {
   const [flashSimonBtn, setFlashSimonBtn] = useState('');
   const randomNumber = Math.floor(Math.random() * 4 + 1);
 
-  ///////// game setting /////////
-  const numberOfRounds = 3;
-  const flashColor = '#e6e6b7';
-  // ////////////////////////////
-
   // 4 Simon buttons - each with value, color and soundFileName
-  var redSimon = new SimonButton(1, 'red',  'dosoundtwo.mp3', 'error.mp3');
-  var greenSimon = new SimonButton(2, 'green', "resound.m4a",  'error.mp3');
-  var blueSimon = new SimonButton(3, 'blue', "misound.m4a",  'error.mp3');
-  var yellowSimon = new SimonButton(4, 'yellow', "fasound.m4a",  'error.mp3');
+  var redSimon = new SimonButton(1, 'red', 'dosoundtwo.mp3', 'error.mp3');
+  var greenSimon = new SimonButton(2, 'green', 'resound.m4a', 'error.mp3');
+  var blueSimon = new SimonButton(3, 'blue', 'misound.m4a', 'error.mp3');
+  var yellowSimon = new SimonButton(4, 'yellow', 'fasound.m4a', 'error.mp3');
   flaseTime = 400;
 
   const [simonOption, setSimonOption] = useState({
     stage: [getRandomBtn()],
     index: 0,
-    numOfTurnes: numberOfRounds,
   });
+  ///////// game setting /////////
+  const numberOfRounds = 3;
+  const flashColor = '#e6e6b7';
+  const gameSpeed = 1200;
+  // ////////////////////////////
+
+  const userLevel = simonOption.stage.length;
   // start and score btns colors
   const color1 = props.colors.btn1[0];
   const color2 = props.colors.btn1[1];
@@ -48,13 +49,13 @@ const SimonBoard = (props) => {
     this.id = id;
     this.color = color;
     this.soundFile = soundFile;
-    this.errorFile= errorFile;
+    this.errorFile = errorFile;
     this.playSound = function () {
-      playSoundBtn(this.soundFile)
+      playSoundBtn(this.soundFile);
     };
-    this.playError = function(){
-      playSoundBtn(this.errorFile)
-    }
+    this.playError = function () {
+      playSoundBtn(this.errorFile);
+    };
   }
 
   function getRandomBtn() {
@@ -68,13 +69,27 @@ const SimonBoard = (props) => {
     wait(200).then(() => setFlashSimonBtn(''));
     simonB.playSound();
   };
+  const updateStateWithLevel = (level) => {
+    props.setUserLevel(level);
+  };
 
+  const gameOver = (win = Boolean) => {
+    let newBtn = getRandomBtn();
+    updateStateWithLevel(userLevel);
+    if (win) {
+      props.setWinGame(true);
+    } else {
+      setPressNotAllow(true);
+      props.setWinGame(false);
+    }
+    props.setModalShow(true);
+    setSimonOption({stage: [newBtn], index: 0});
+  };
   const startRound = (stage = []) => {
     setPressNotAllow(true);
-    if (simonOption.numOfTurnes == 1) {
-      let newBtn = getRandomBtn();
-      Alert.alert('Yeah we won!');
-      setSimonOption({stage: [newBtn], index: 0, numOfTurnes: numberOfRounds});
+    if (numberOfRounds == userLevel) {
+      // winningGame();
+      gameOver(true);
       return;
     }
     let i = 0;
@@ -99,23 +114,20 @@ const SimonBoard = (props) => {
     // if mistake
     if (arrayOfOption[indexToCheck].id !== btn.id) {
       btn.playError();
-      setSimonOption({stage: [newBtn], index: 0, numOfTurnes: numberOfRounds});
-      setPressNotAllow(true);
-      Alert.alert('Wrong number');
-
+      // loosingGame();
+      gameOver(false);
     }
     // check and move index up
     else if (indexToCheck + 1 < lengthOfArray) {
-      btn.playSound()
+      btn.playSound();
       setSimonOption({...simonOption, index: simonOption.index + 1});
     }
     // if last number in array - check complete => add another random SimonButton
     else {
-      btn.playSound()
+      btn.playSound();
       setSimonOption({
         ...simonOption,
         index: 0,
-        numOfTurnes: simonOption.numOfTurnes - 1,
         stage: [...simonOption.stage, newBtn],
       });
     }
@@ -137,14 +149,12 @@ const SimonBoard = (props) => {
   const device = RNLocalize.getLocales();
   const alignToLaguage =
     device && device[0].languageTag == 'he-IL' ? hebrewAlign : englishAlign;
-  const gameSpeed = 1700;
-  const userLevel = simonOption.stage.length;
 
   // navigate to ResultScreen
   const navigateResult = () => {
     props.navigation.navigate('ResultScreen');
   };
-// start btn function
+  // start btn function
   const startBtn = () => {
     startRound(simonOption.stage);
   };
@@ -186,8 +196,9 @@ const SimonBoard = (props) => {
             styles.btnImage,
 
             {
-              tintColor:flashSimonBtn == redSimon.color ? flashColor : redSimon.color,
-              transform: [{rotate: alignToLaguage.first}], 
+              tintColor:
+                flashSimonBtn == redSimon.color ? flashColor : redSimon.color,
+              transform: [{rotate: alignToLaguage.first}],
             },
           ])}
           {renderSimonBtn(() => myPlay(greenSimon), styles.btnSingle, [

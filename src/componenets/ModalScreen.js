@@ -11,7 +11,7 @@ import {
 
 const ModalScreen = (props) => {
   const navigation = props.navigation;
-  const [name, setName] = useState('');
+  const name= props.userName;
   const showModal = props.modalShow;
   const status = props.winGame ? 'Won!' : 'Lost!';
 
@@ -21,9 +21,10 @@ const ModalScreen = (props) => {
       Alert.alert('Please enter a name');
       return;
     }
-    props.setUserData({...props.userData, name});
     props.setModalShow(false);
-    navigation.push('ResultScreen', {name, result: props.userData.result});
+    props.setUserName("")
+    props.LevelUp()
+    navigation.push('ResultScreen');
     // setName("")
   };
   return (
@@ -42,7 +43,7 @@ const ModalScreen = (props) => {
                 borderWidth: 1,
                 height: 40,
               }}
-              onChangeText={(text) => setName(text)}
+              onChangeText={(text) => props.setUserName(text)}
             />
           </View>
           <Button

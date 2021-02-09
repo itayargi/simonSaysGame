@@ -5,7 +5,10 @@ import GameScreen from '../screens/GameScreen';
 import ResultScreen from '../screens/ResultScreen';
 import {View, StyleSheet, Text, } from 'react-native'; 
 import { navigationRef, isReadyRef } from "./RootNavigation";
+import {Provider} from 'react-redux';
+import configureStore from '../redux/store';
 
+const store = configureStore();
 
 const Stack = createStackNavigator();
 const MyTheme = {
@@ -24,6 +27,7 @@ const MyTheme = {
 
 const AppNavigation = ()=>{ 
  return (
+   <Provider store={store}>
     <NavigationContainer theme={MyTheme} ref={navigationRef} >
     <Stack.Navigator
       // headerMode="screen"
@@ -41,6 +45,7 @@ const AppNavigation = ()=>{
       />
     </Stack.Navigator>
   </NavigationContainer>
+   </Provider>
  ) 
 }
 const styles = StyleSheet.create({

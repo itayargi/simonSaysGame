@@ -6,6 +6,7 @@
  * @flow strict-local
  */
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import {
   SafeAreaView,
@@ -25,9 +26,9 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import AppNavigation from './src/navigation/AppNavigation';
 import GameScreen from './src/screens/GameScreen';
-var Sound = require('react-native-sound');
-// Enable playback in silence mode
-Sound.setCategory('Playback');
+  // AsyncStorage.clear()
+  
+
 const App: () => React$Node = () => {
   return (
     <>
