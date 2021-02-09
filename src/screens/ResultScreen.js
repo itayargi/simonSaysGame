@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {View, StyleSheet, Text, Button, Image} from 'react-native';
 import {connect} from 'react-redux';
 import PlayersList from '../componenets/PlayersList';
+import FadeInView from '../componenets/FadeInView';
 
 const ResultScreen = (props) => {
   const reduxState = props.scores;
@@ -29,7 +30,7 @@ const ResultScreen = (props) => {
   return (
     <View style={styles.container}>
       {/* list */}
-      <View style={{flex: 1}}>
+      <FadeInView style={{flex: 1}}>
         {userList.length > 0 ? (
           <PlayersList playersList={userList} />
         ) : (
@@ -39,14 +40,13 @@ const ResultScreen = (props) => {
             <Text style={styles.userText}>Press start to play</Text>
           </View>
         )}
-      </View>
-
+      </FadeInView>
       <Button title="Game Screen" onPress={navigateGameScreen} />
     </View>
   );
 };
 const styles = StyleSheet.create({
-  container: {flex: 1, padding: 10},
+  container: {flex: 1, padding: 10, maxWidth:"100%"},
   userText: {
     color: 'white',
   },

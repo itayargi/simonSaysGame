@@ -8,10 +8,9 @@ const wait = (timeout) => {
     });
   };
 
-const audioLength = 800;
+const audioLength = 600;
 
 export const playSoundBtn = (file) => {
-    console.log(('file', file));
 if (file !== undefined){
     var whoosh = new Sound(file, Sound.MAIN_BUNDLE, (error) => {
         if (error) {

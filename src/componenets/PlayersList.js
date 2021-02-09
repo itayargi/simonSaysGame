@@ -38,7 +38,7 @@ const PlayersList = (props) => {
               <Text style={{color: colors.text}}>{player.score}</Text>
               
             </View>
-            <View style={{ paddingHorizontal:7}}>
+            <View style={{  flex:0.1, alignItems:"center"}}>
             {index == 0 && (
               <Image
                 style={{width: 30, height: 30}}
@@ -61,7 +61,7 @@ const PlayersList = (props) => {
 };
 const styles = StyleSheet.create({
   listBox: {
-    width: '100%',
+    flex: 1,
     // padding: 10,
   },
   header: {
@@ -76,7 +76,8 @@ const styles = StyleSheet.create({
   player: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '85%',
+    // width: '85%',
+    flex:0.9,
     borderBottomWidth: 1,
     padding: 5,
     marginVertical: 5,

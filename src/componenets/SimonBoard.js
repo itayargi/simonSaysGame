@@ -160,7 +160,7 @@ const SimonBoard = (props) => {
   };
   useEffect(() => {
     if (simonOption.stage.length > 1) {
-      startRound(simonOption.stage);
+      wait(500).then(()=>startRound(simonOption.stage))
     }
   }, [simonOption.stage]);
 
@@ -233,14 +233,14 @@ const SimonBoard = (props) => {
         </View>
       </View>
       <View style={styles.Play}>
-        <TouchableOpacity onPress={() => startBtn()} style={styles.btn}>
+        <TouchableOpacity disabled={userLevel >1 && pressNotAllowed} onPress={() => startBtn()} style={styles.btn}>
           <LinearGradient
             colors={[color1, color2]}
             style={styles.linearGradient}>
             <Text style={styles.btnText}>START</Text>
           </LinearGradient>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateResult()} style={styles.btn}>
+        <TouchableOpacity  onPress={() => navigateResult()} style={styles.btn}>
           <LinearGradient
             colors={[color1, color2]}
             style={styles.linearGradient}>
