@@ -8,12 +8,9 @@ const wait = (timeout) => {
     });
   };
 
-  const filesList =[ 
-    'dosoundtwo.mp3', 'resound.m4a','misound.m4a','fasound.m4a',
-  ]
 const audioLength = 800;
-export const playSoundBtn = (num) => {
-    const file = filesList[num];
+
+export const playSoundBtn = (file) => {
     console.log(('file', file));
 if (file !== undefined){
     var whoosh = new Sound(file, Sound.MAIN_BUNDLE, (error) => {

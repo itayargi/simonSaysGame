@@ -10,8 +10,8 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import {SIMONBTN} from '../../android/app/src/images';
 import * as RNLocalize from 'react-native-localize';
-import {useLinkProps} from '@react-navigation/native';
 import {playSoundBtn} from './utils';
+
 const wait = (timeout) => {
   return new Promise((resolve) => {
     setTimeout(resolve, timeout);
@@ -22,14 +22,17 @@ const SimonBoard = (props) => {
   const [pressNotAllowed, setPressNotAllow] = useState(true);
   const [flashSimonBtn, setFlashSimonBtn] = useState('');
   const randomNumber = Math.floor(Math.random() * 4 + 1);
-  const numberOfRounds = 3;
-  const flashColor = 'white';
-  const redColor = 'red';
 
-  var redSimon = new SimonButton(1, 'red');
-  var greenSimon = new SimonButton(2, 'green');
-  var blueSimon = new SimonButton(3, 'blue');
-  var yellowSimon = new SimonButton(4, 'yellow');
+  ///////// game setting /////////
+  const numberOfRounds = 3;
+  const flashColor = '#e6e6b7';
+  // ////////////////////////////
+
+  // 4 Simon buttons - each with value, color and soundFileName
+  var redSimon = new SimonButton(1, 'red',  'dosoundtwo.mp3', 'error.mp3');
+  var greenSimon = new SimonButton(2, 'green', "resound.m4a",  'error.mp3');
+  var blueSimon = new SimonButton(3, 'blue', "misound.m4a",  'error.mp3');
+  var yellowSimon = new SimonButton(4, 'yellow', "fasound.m4a",  'error.mp3');
   flaseTime = 400;
 
   const [simonOption, setSimonOption] = useState({
@@ -37,14 +40,21 @@ const SimonBoard = (props) => {
     index: 0,
     numOfTurnes: numberOfRounds,
   });
+  // start and score btns colors
   const color1 = props.colors.btn1[0];
   const color2 = props.colors.btn1[1];
-  function SimonButton(id, color) {
+
+  function SimonButton(id, color, soundFile, errorFile) {
     this.id = id;
     this.color = color;
+    this.soundFile = soundFile;
+    this.errorFile= errorFile;
     this.playSound = function () {
-      playSoundBtn(this.id - 1);
+      playSoundBtn(this.soundFile)
     };
+    this.playError = function(){
+      playSoundBtn(this.errorFile)
+    }
   }
 
   function getRandomBtn() {
@@ -60,13 +70,13 @@ const SimonBoard = (props) => {
   };
 
   const startRound = (stage = []) => {
+    setPressNotAllow(true);
     if (simonOption.numOfTurnes == 1) {
       let newBtn = getRandomBtn();
       Alert.alert('Yeah we won!');
       setSimonOption({stage: [newBtn], index: 0, numOfTurnes: numberOfRounds});
       return;
     }
-    setPressNotAllow(true);
     let i = 0;
     let intervalRound = setInterval(() => {
       //   finish round
@@ -80,6 +90,7 @@ const SimonBoard = (props) => {
     }, gameSpeed);
     setSimonOption({...simonOption, index: 0});
   };
+  // user press function
   const myPlay = (btn = SimonButton) => {
     let newBtn = getRandomBtn();
     const indexToCheck = simonOption.index;
@@ -87,15 +98,20 @@ const SimonBoard = (props) => {
     const lengthOfArray = arrayOfOption.length;
     // if mistake
     if (arrayOfOption[indexToCheck].id !== btn.id) {
-      Alert.alert('Wrong number');
+      btn.playError();
       setSimonOption({stage: [newBtn], index: 0, numOfTurnes: numberOfRounds});
+      setPressNotAllow(true);
+      Alert.alert('Wrong number');
+
     }
     // check and move index up
     else if (indexToCheck + 1 < lengthOfArray) {
+      btn.playSound()
       setSimonOption({...simonOption, index: simonOption.index + 1});
     }
     // if last number in array - check complete => add another random SimonButton
     else {
+      btn.playSound()
       setSimonOption({
         ...simonOption,
         index: 0,
@@ -128,7 +144,7 @@ const SimonBoard = (props) => {
   const navigateResult = () => {
     props.navigation.navigate('ResultScreen');
   };
-
+// start btn function
   const startBtn = () => {
     startRound(simonOption.stage);
   };
@@ -170,9 +186,8 @@ const SimonBoard = (props) => {
             styles.btnImage,
 
             {
-              tintColor:
-                flashSimonBtn == redSimon.color ? 'white' : redSimon.color,
-              transform: [{rotate: alignToLaguage.first}],
+              tintColor:flashSimonBtn == redSimon.color ? flashColor : redSimon.color,
+              transform: [{rotate: alignToLaguage.first}], 
             },
           ])}
           {renderSimonBtn(() => myPlay(greenSimon), styles.btnSingle, [
