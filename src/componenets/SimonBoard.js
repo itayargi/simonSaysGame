@@ -23,17 +23,19 @@ const SimonBoard = (props) => {
   const [flashSimonBtn, setFlashSimonBtn] = useState('');
   const randomNumber = Math.floor(Math.random() * 4 + 1);
 
-  // 4 Simon buttons - each with value, color and soundFileName
+  // 4 Simon buttons - each with value, color and soundFileName(one for correct press and one for not)
   var redSimon = new SimonButton(1, 'red', 'dosoundtwo.mp3', 'error.mp3');
   var greenSimon = new SimonButton(2, 'green', 'resound.m4a', 'error.mp3');
   var blueSimon = new SimonButton(3, 'blue', 'misound.m4a', 'error.mp3');
   var yellowSimon = new SimonButton(4, 'yellow', 'fasound.m4a', 'error.mp3');
+  // time for flash
   flaseTime = 400;
 
   const [simonOption, setSimonOption] = useState({
     stage: [getRandomBtn()],
     index: 0,
   });
+
   ///////// game setting /////////
   const numberOfRounds = 10;
   const flashColor = '#e6e6b7';
@@ -64,15 +66,17 @@ const SimonBoard = (props) => {
     return options[randomNumber];
   }
 
+  // when pressing a btn- play sound of that btn and flash
   const simonAction = (simonB = SimonButton) => {
+    simonB.playSound();
     setFlashSimonBtn(simonB.color);
     wait(200).then(() => setFlashSimonBtn(''));
-    simonB.playSound();
   };
+  // update the hook that sends the level of the user to redux state
   const updateStateWithLevel = (level) => {
     props.setUserLevel(level);
   };
-
+// Game finish- true if win / false if loosing
   const gameOver = (win = Boolean) => {
     let newBtn = getRandomBtn();
     updateStateWithLevel(userLevel);
@@ -85,10 +89,10 @@ const SimonBoard = (props) => {
     props.setModalShow(true);
     setSimonOption({stage: [newBtn], index: 0});
   };
+  // start going threw the array of btns - stops at the end of the array
   const startRound = (stage = []) => {
     setPressNotAllow(true);
     if (numberOfRounds == userLevel) {
-      // winningGame();
       gameOver(true);
       return;
     }
@@ -114,7 +118,6 @@ const SimonBoard = (props) => {
     // if mistake
     if (arrayOfOption[indexToCheck].id !== btn.id) {
       btn.playError();
-      // loosingGame();
       gameOver(false);
     }
     // check and move index up
@@ -192,6 +195,7 @@ const SimonBoard = (props) => {
         </View>
         {/* first row btns (red and green) */}
         <View style={styles.btnPlayRow}>
+          {/* RED BUTTON */}
           {renderSimonBtn(() => myPlay(redSimon), styles.btnSingle, [
             styles.btnImage,
 
@@ -201,6 +205,7 @@ const SimonBoard = (props) => {
               transform: [{rotate: alignToLaguage.first}],
             },
           ])}
+          {/* GREEN BUTTON */}
           {renderSimonBtn(() => myPlay(greenSimon), styles.btnSingle, [
             styles.btnImage,
             {
@@ -212,6 +217,7 @@ const SimonBoard = (props) => {
         </View>
         {/* second row btns (blue and yellow) */}
         <View style={styles.btnPlayRow}>
+          {/* BLUE BUTTON */}
           {renderSimonBtn(() => myPlay(blueSimon), styles.btnSingle, [
             styles.btnImage,
             {
@@ -220,6 +226,7 @@ const SimonBoard = (props) => {
               transform: [{rotate: alignToLaguage.third}],
             },
           ])}
+          {/* YELLOW BUTTON */}
           {renderSimonBtn(() => myPlay(yellowSimon), styles.btnSingle, [
             styles.btnImage,
             {
@@ -233,6 +240,7 @@ const SimonBoard = (props) => {
         </View>
       </View>
       <View style={styles.Play}>
+        {/* START BUTTON */}
         <TouchableOpacity disabled={userLevel >1 && pressNotAllowed} onPress={() => startBtn()} style={styles.btn}>
           <LinearGradient
             colors={[color1, color2]}
@@ -240,6 +248,7 @@ const SimonBoard = (props) => {
             <Text style={styles.btnText}>START</Text>
           </LinearGradient>
         </TouchableOpacity>
+        {/* SCORE BUTTON */}
         <TouchableOpacity  onPress={() => navigateResult()} style={styles.btn}>
           <LinearGradient
             colors={[color1, color2]}
