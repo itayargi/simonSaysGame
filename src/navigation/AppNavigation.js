@@ -3,7 +3,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
 import GameScreen from '../screens/GameScreen';
 import ResultScreen from '../screens/ResultScreen';
-import {View, StyleSheet, Text, } from 'react-native'; 
+import { StyleSheet} from 'react-native'; 
 import { navigationRef, isReadyRef } from "./RootNavigation";
 import {Provider} from 'react-redux';
 import configureStore from '../redux/store';
@@ -34,14 +34,15 @@ const AppNavigation = ()=>{
    <Provider store={store}>
     <NavigationContainer theme={MyTheme} ref={navigationRef} >
     <Stack.Navigator
-      // headerMode="screen"
       screenOptions={{animationEnabled: false, headerLeft: '', }}
       initialRouteName="GameScreen">
+      {/* GAME SCREEN */}
       <Stack.Screen
         options={{headerShown: false}}
         name="GameScreen"
         component={GameScreen}
       />
+      {/* RESULT SCREEN */}
       <Stack.Screen
         options={{title: 'Result Screen', headerTitleAlign: 'center',headerTitleStyle:{color:"white"}}}
         name="ResultScreen"

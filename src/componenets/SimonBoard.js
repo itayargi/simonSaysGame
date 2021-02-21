@@ -12,6 +12,7 @@ import {SIMONBTN} from '../../android/app/src/images';
 import * as RNLocalize from 'react-native-localize';
 import {playSoundBtn} from './utils';
 
+// WAIT FUNCTION
 const wait = (timeout) => {
   return new Promise((resolve) => {
     setTimeout(resolve, timeout);
@@ -24,12 +25,10 @@ const SimonBoard = (props) => {
   const randomNumber = Math.floor(Math.random() * 4 + 1);
 
   // 4 Simon buttons - each with value, color and soundFileName(one for correct press and one for not)
-  var redSimon = new SimonButton(1, 'red', 'dosoundtwo.mp3', 'error.mp3');
-  var greenSimon = new SimonButton(2, 'green', 'resound.m4a', 'error.mp3');
-  var blueSimon = new SimonButton(3, 'blue', 'misound.m4a', 'error.mp3');
-  var yellowSimon = new SimonButton(4, 'yellow', 'fasound.m4a', 'error.mp3');
-  // time for flash
-  flaseTime = 400;
+  const redSimon = new SimonButton(1, 'red', 'dosoundtwo.mp3', 'error.mp3');
+  const greenSimon = new SimonButton(2, 'green', 'resound.m4a', 'error.mp3');
+  const blueSimon = new SimonButton(3, 'blue', 'misound.m4a', 'error.mp3');
+  const yellowSimon = new SimonButton(4, 'yellow', 'fasound.m4a', 'error.mp3');
 
   const [simonOption, setSimonOption] = useState({
     stage: [getRandomBtn()],
@@ -37,8 +36,9 @@ const SimonBoard = (props) => {
   });
 
   ///////// game setting /////////
-  const numberOfRounds = 10;
+  const numberOfRounds = 100;
   const flashColor = '#e6e6b7';
+  const flashTime = 300;
   const gameSpeed = 1200;
   // ////////////////////////////
 
@@ -59,7 +59,7 @@ const SimonBoard = (props) => {
       playSoundBtn(this.errorFile);
     };
   }
-
+  // get random btn function
   function getRandomBtn() {
     const randomNumber = Math.floor(Math.random() * 3 + 0);
     const options = [redSimon, greenSimon, blueSimon, yellowSimon];
@@ -70,13 +70,13 @@ const SimonBoard = (props) => {
   const simonAction = (simonB = SimonButton) => {
     simonB.playSound();
     setFlashSimonBtn(simonB.color);
-    wait(200).then(() => setFlashSimonBtn(''));
+    wait(flashTime).then(() => setFlashSimonBtn(''));
   };
   // update the hook that sends the level of the user to redux state
   const updateStateWithLevel = (level) => {
     props.setUserLevel(level);
   };
-// Game finish- true if win / false if loosing
+  // Game finish- true if win / false if loosing
   const gameOver = (win = Boolean) => {
     let newBtn = getRandomBtn();
     updateStateWithLevel(userLevel);
@@ -120,7 +120,7 @@ const SimonBoard = (props) => {
       btn.playError();
       gameOver(false);
     }
-    // check and move index up
+    // check for correct press and move the index up
     else if (indexToCheck + 1 < lengthOfArray) {
       btn.playSound();
       setSimonOption({...simonOption, index: simonOption.index + 1});
@@ -136,7 +136,6 @@ const SimonBoard = (props) => {
     }
   };
 
-  //   align
   const hebrewAlign = {
     first: '90deg',
     sec: '0deg',
@@ -163,7 +162,7 @@ const SimonBoard = (props) => {
   };
   useEffect(() => {
     if (simonOption.stage.length > 1) {
-      wait(500).then(()=>startRound(simonOption.stage))
+      wait(500).then(() => startRound(simonOption.stage));
     }
   }, [simonOption.stage]);
 
@@ -183,7 +182,6 @@ const SimonBoard = (props) => {
       <View style={{alignItems: 'center', marginBottom: 20}}>
         <Text style={{fontSize: 22, color: 'white'}}>Press start to play</Text>
       </View>
-
       {/* btns */}
       <View style={{}}>
         {/* status circle */}
@@ -241,7 +239,10 @@ const SimonBoard = (props) => {
       </View>
       <View style={styles.Play}>
         {/* START BUTTON */}
-        <TouchableOpacity disabled={userLevel >1 && pressNotAllowed} onPress={() => startBtn()} style={styles.btn}>
+        <TouchableOpacity
+          disabled={userLevel > 1 && pressNotAllowed}
+          onPress={() => startBtn()}
+          style={styles.btn}>
           <LinearGradient
             colors={[color1, color2]}
             style={styles.linearGradient}>
@@ -249,7 +250,7 @@ const SimonBoard = (props) => {
           </LinearGradient>
         </TouchableOpacity>
         {/* SCORE BUTTON */}
-        <TouchableOpacity  onPress={() => navigateResult()} style={styles.btn}>
+        <TouchableOpacity onPress={() => navigateResult()} style={styles.btn}>
           <LinearGradient
             colors={[color1, color2]}
             style={styles.linearGradient}>

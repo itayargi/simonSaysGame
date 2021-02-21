@@ -1,8 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {View, StyleSheet, Text} from 'react-native';
 import ModalScreen from '../componenets/ModalScreen';
-// import SimonBtn from '../components/SimonBtn';
-// import {DataStorage} from '../context/DataStorage';
 import LinearGradient from 'react-native-linear-gradient';
 import {useTheme} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,6 +18,7 @@ const GameScreen = (props) => {
   const maxPlayersOnList = 10;
   const sumOfPlayers = reduxState.length;
 
+  // CHECK IF USER'S SCORE IS ENOUGH TO ENTER THE LIST 
   const checkifUserEnterList = (score) => {
     let otherLowerUser = reduxState.find((user) => user.score <= score);
     if (otherLowerUser !== undefined) {
@@ -50,22 +49,21 @@ if (listFromStorage !== undefined){
   })
 }
 }
-
+// WHEN GAME IS FINISH FUNCTION => ENTER/NOT ENTER THE USER TO THE LIST
   const LevelUp = async() => {
-    // list still empty -enter the user
+    //if list is less than 10 players -enter the user
     if (sumOfPlayers < maxPlayersOnList) {
       props.dispatch({type: 'ADDPRESS', name: userName, score: userLevel});
     }
-    // the list has max player- check result to see if the user enter the list
+    // the list has 10 players- check result to see if the user enter the list
     else {
       let userEnter = checkifUserEnterList(userLevel);
       if (userEnter) {
         props.dispatch({type: 'ADDPRESS', name: userName, score: userLevel});
-        // save the new list in storage
       }
       // user is not joining the list- just navigate to ResultScreen
       else {
-        console.log('you are not enter the list');
+        console.log('you are not in the list');
       }
     }
   };
@@ -81,12 +79,7 @@ if (listFromStorage !== undefined){
       colors={['#4c669f', '#3f4250', '#111108']}
       style={styles.container}>
       <Text
-        style={{
-          fontSize: 32,
-          textDecorationLine: 'underline',
-          fontWeight: 'bold',
-          color: 'white',
-        }}>
+        style={styles.welcome}>
         Welcome
       </Text>
       {/* Simon btns */}
@@ -98,7 +91,7 @@ if (listFromStorage !== undefined){
         setModalShow={setModalShow}
         modalShow={modalShow}
       />
-      {/* start btn */}
+      {/* modal to enter user name when game is finished */}
       <ModalScreen
         LevelUp={LevelUp}
         winGame={winGame}
@@ -108,7 +101,6 @@ if (listFromStorage !== undefined){
         setModalShow={setModalShow}
         modalShow={modalShow}
       />
-      {/* <Button title="sore" onPress={navigateResult} /> */}
     </LinearGradient>
   );
 };
@@ -116,6 +108,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+  },
+  welcome:{
+    fontSize: 32,
+    textDecorationLine: 'underline',
+    fontWeight: 'bold',
+    color: 'white',
   },
 });
 function mapStateToProps(state) {
